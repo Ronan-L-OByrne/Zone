@@ -8,7 +8,6 @@ import java.net.URL;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.util.Log;
 
 /**
  * Created by vincent ogbe on 07/11/2017.

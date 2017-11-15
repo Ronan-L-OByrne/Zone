@@ -16,7 +16,7 @@ public class city_zone {
     // If the user has not chosen a city yet, return
     // Sydney as the default city
     String getCity(){
-        return prefs.getString("city", "Sydney, AU");
+        return prefs.getString("city", "Oulu, FI");
     }
 
     void setCity(String city){

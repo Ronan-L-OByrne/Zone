@@ -24,10 +24,10 @@ import java.util.Locale;
  */
 
 public class fragment_zone extends Fragment{
-    public boolean beacon = false;
+    private String tempLight = "LOADING LIGHT...";
+    public boolean beacon = true;
     public Double curLight = 0.0;
     public Double curTemp = 0.0;
-    public String curCity = "";
     public JSONObject curWth;
 
     Typeface weatherFont;
@@ -93,10 +93,12 @@ public class fragment_zone extends Fragment{
             JSONObject details = json.getJSONArray("weather").getJSONObject(0);
             JSONObject main = json.getJSONObject("main");
             if (beacon){
+                tempLight = lightLevel(curLight);
+
                 detailsField.setText(details.getString("description").toUpperCase(Locale.US)+ "\n"
                         + "Humidity: " + main.getString("humidity") + "" + "\n"
                         + "Pressure: " + main.getString("pressure") + " hPa" + "\n"
-                        + "Light: " + curLight + "lux");
+                        + "Light: " + tempLight);
 
                 currentTemperatureField.setText(curTemp + " ℃");
             }
@@ -150,6 +152,49 @@ public class fragment_zone extends Fragment{
 
     public void changeCity(String city){
         updateWeatherData(city);
+    }
+
+    public String lightLevel(Double light)
+    {
+
+        if(light < 2)
+        {
+            return "Very Dark";
+        }// end if
+        else if(light >= 2 && light < 50)
+        {
+            return "Dark";
+        }// end else if
+        else if(light >= 50 && light < 100)
+        {
+            return "Low Light";
+        }// end else if
+        else if(light >= 100 && light < 750)
+        {
+            return "Overcast and Dark";
+        }// end elseif
+        else if(light >= 750 && light < 2500)
+        {
+            return "Overcast";
+        }// end else if
+        else if(light >= 2500 && light < 5000)
+        {
+            return "Average";
+        }// end else if
+        else if(light >= 5000 && light < 10000)
+        {
+            return "Nice out";
+        }// end else if
+        else if(light >= 10000 && light < 29000)
+        {
+            return "Sunny";
+        }// end else if
+        else if(light >= 29000)
+        {
+            return "Very Bright";
+        }// end else if
+
+        return "ERROR";
     }
 }
 

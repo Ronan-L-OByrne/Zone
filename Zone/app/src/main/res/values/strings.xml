@@ -2,8 +2,8 @@
 <resources>
 
     <string name="app_name">Zone</string>
-    <string name="becon_option">becon</string>
-    <string name="change_city">Change city</string>
+    <string name="beacon_option">beacon</string>
+    <string name="change_city">Change City</string>
 
     <!-- Put your own APP ID here -->
     <string name="open_weather_maps_app_id">0a52e8245c7fd3b9cd47ae23eab1d3e7</string>

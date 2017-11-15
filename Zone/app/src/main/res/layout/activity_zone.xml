@@ -6,7 +6,5 @@
     tools:context="com.example.vincentogbe.zone.Zone"
     android:id="@+id/container"
     tools:ignore="MergeRootFrame"
-    android:background="#B0B0B0" >
-
-
+    android:background="@color/colorPrimaryDark">
 </FrameLayout>

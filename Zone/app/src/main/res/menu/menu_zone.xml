@@ -10,8 +10,8 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/becon_option"
-        android:title="becon"
+        android:id="@+id/beacon_option"
+        android:title="Beacon: ON"
         android:orderInCategory="2"
         app:showAsAction="never"/>
 

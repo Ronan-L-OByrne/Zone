@@ -19,6 +19,9 @@ import com.estimote.coresdk.recognition.packets.EstimoteTelemetry;
 import com.estimote.coresdk.service.BeaconManager;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -27,7 +30,10 @@ import android.content.Intent;
 
 public class Zone extends AppCompatActivity{
 
+    private fragment_zone fz = (fragment_zone) getSupportFragmentManager()
+            .findFragmentById(R.id.container);
     private BeaconManager beaconManager;
+    private String beaconId = "";
     public Double curTemp = 0.0;
     public Double curLight = 0.0;
 
@@ -53,94 +59,89 @@ public class Zone extends AppCompatActivity{
             @Override
             public void onTelemetriesFound(List<EstimoteTelemetry> telemetries)
             {
-                fragment_zone fz = (fragment_zone) getSupportFragmentManager()
+                fz  = (fragment_zone) getSupportFragmentManager()
                         .findFragmentById(R.id.container);
-
                 for (EstimoteTelemetry tlm : telemetries)
                 {
-                    curTemp = Math.round(tlm.temperature * 10.0) / 10.0;
-                    curLight = Math.round(tlm.ambientLight * 10.0) / 10.0;
-                    if (curTemp >= -30 && curTemp < -10)
+                    if(tlm == null)
                     {
-                        if(tlm.motionState)
-                        {
-                            showNotification("DANGER FREEZING!", curTemp + "°C! Do not leave house unless necessary. Light: " + curLight + "lux");
-                        }// end if
-                        fz.curLight = curLight;
-                        fz.curTemp = curTemp;
-                        break;
+                        curTemp = 0.0;
+                        curLight = 0.0;
+                        beaconId = "";
                     }// end if
-                    else if (curTemp >= -10 && curTemp < 0)
-                    {
-                        if(tlm.motionState)
-                        {
-                            showNotification("WARNING FREEZING", curTemp + "°C! Wrap up very warm before leaving. Light: " + curLight + "lux");
+                    else if(beaconId.equals(tlm.deviceId.toString()) || beaconId.equals("")) {
+                        beaconId = tlm.deviceId.toString();
+                        Double tempTemp = curTemp;
+                        curTemp = Math.round(tlm.temperature * 10.0) / 10.0;
+                        curLight = Math.round(tlm.ambientLight * 10.0) / 10.0;
+                        if (curTemp >= -30 && curTemp < -10) {
+                            if (tempTemp != curTemp) {
+                                showNotification("DANGER FREEZING!", curTemp + "°C! Do not leave house unless necessary. " + fz.lightLevel(curLight));
+                            }// end if
+                            fz.curLight = curLight;
+                            fz.curTemp = curTemp;
+                            break;
                         }// end if
-                        fz.curLight = curLight;
-                        fz.curTemp = curTemp;
-                    }// end else if
-                    else if (curTemp >= 0 && curTemp < 10)
-                    {
-                        if(tlm.motionState)
-                        {
-                            showNotification("Cold", curTemp + "°C. Make sure you have your jacket. Light: " + curLight + "lux");
-                        }// end if
-                        fz.curLight = curLight;
-                        fz.curTemp = curTemp;
-                        break;
-                    }// end else if
-                    else if (curTemp >= 10 && curTemp < 20)
-                    {
-                        if(tlm.motionState)
-                        {
-                            showNotification("Good", curTemp + "°C. Good temperature, be comfortable. Light: " + curLight + "lux");
-                        }// end if
-                        fz.curLight = curLight;
-                        fz.curTemp = curTemp;
-                        break;
-                    }// end else if
-                    else if (curTemp >= 20 && curTemp < 30)
-                    {
-                        if(tlm.motionState)
-                        {
-                            showNotification("Warm", curTemp + "°C. Dress light. Light: " + curLight + "lux");
-                        }// end if
-                        fz.curLight = curLight;
-                        fz.curTemp = curTemp;
-                        break;
-                    }// end else if
-                    else if (curTemp >= 30 && curTemp < 40)
-                    {
-                        if(tlm.motionState)
-                        {
-                            showNotification("WARNING HOT", curTemp + "°C! Very hot dress very light. Light: " + curLight + "lux");
-                        }// end if
-                        fz.curLight = curLight;
-                        fz.curTemp = curTemp;
-                        break;
-                    }// end else if
-                    else if (curTemp >= 40 && curTemp < 60)
-                    {
-                        if(tlm.motionState)
-                        {
-                            showNotification("DANGER HOT!", curTemp + "°C! Do not leave house unless necessary. Light: " + curLight + "lux");
-                        }// end if
-                        fz.curLight = curLight;
-                        fz.curTemp = curTemp;
-                        break;
-                    }// end else if
-                    else
-                    {
-                        if(tlm.motionState)
-                        {
-                            showNotification("PROBABLY DEAD!", curTemp + "°C! Unfortunately you are probably dead :( Light: " + curLight + "lux");
-                        }// end if
-                        fz.curLight = curLight;
-                        fz.curTemp = curTemp;
-                        break;
-                    }// end else
+                        else if (curTemp >= -10 && curTemp < 0) {
+                            if (tempTemp != curTemp) {
+                                showNotification("WARNING FREEZING", curTemp + "°C! Wrap up very warm before leaving. " + fz.lightLevel(curLight));
+                            }// end if
+                            fz.curLight = curLight;
+                            fz.curTemp = curTemp;
+                        }// end else if
+                        else if (curTemp >= 0 && curTemp < 10) {
+                            if (tempTemp != curTemp) {
+                                showNotification("Cold", curTemp + "°C. Make sure you have your jacket. " + fz.lightLevel(curLight));
+                            }// end if
+                            fz.curLight = curLight;
+                            fz.curTemp = curTemp;
+                            break;
+                        }// end else if
+                        else if (curTemp >= 10 && curTemp < 20) {
+                            if (tempTemp != curTemp) {
+                                showNotification("Good", curTemp + "°C. Good temperature, be comfortable. " + fz.lightLevel(curLight));
+                            }// end if
+                            fz.curLight = curLight;
+                            fz.curTemp = curTemp;
+                            break;
+                        }// end else if
+                        else if (curTemp >= 20 && curTemp < 30) {
+                            if (tempTemp != curTemp) {
+                                showNotification("Warm", curTemp + "°C. Dress light. " + fz.lightLevel(curLight));
+                            }// end if
+                            fz.curLight = curLight;
+                            fz.curTemp = curTemp;
+                            break;
+                        }// end else if
+                        else if (curTemp >= 30 && curTemp < 40) {
+                            if (tempTemp != curTemp) {
+                                showNotification("WARNING HOT", curTemp + "°C! Very hot dress very light. " + fz.lightLevel(curLight));
+                            }// end if
+                            fz.curLight = curLight;
+                            fz.curTemp = curTemp;
+                            break;
+                        }// end else if
+                        else if (curTemp >= 40 && curTemp < 60) {
+                            if (tempTemp != curTemp) {
+                                showNotification("DANGER HOT!", curTemp + "°C! Do not leave house unless necessary. " + fz.lightLevel(curLight));
+                            }// end if
+                            fz.curLight = curLight;
+                            fz.curTemp = curTemp;
+                            break;
+                        }// end else if
+                        else {
+                            if (tempTemp != curTemp) {
+                                showNotification("PROBABLY DEAD!", curTemp + "°C! Unfortunately you are probably dead :( " + fz.lightLevel(curLight));
+                            }// end if
+                            fz.curLight = curLight;
+                            fz.curTemp = curTemp;
+                            break;
+                        }// end else
+                    }// end if
                 }// end for
-                fz.renderWeather(fz.curWth);
+                if(fz.curWth != null) {
+                    fz.renderWeather(fz.curWth);
+                }// end if
             }//end onTelemetryFound
         });// end setTelemetryListener
 
@@ -183,28 +184,27 @@ public class Zone extends AppCompatActivity{
 
     public void showNotification(String title, String message)
     {
-        if (notificationAlreadyShown) { return; }
+        if(fz.beacon) {
+            if (notificationAlreadyShown) {
+                return;
+            }
 
-        Intent notifyIntent = new Intent(this, Zone.class);
-        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            Intent notifyIntent = new Intent(this, Zone.class);
+            notifyIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        PendingIntent pendingIntent = PendingIntent.getActivities(this, 0,
-                new Intent[] { notifyIntent }, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getActivities(this, 0, new Intent[]{notifyIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification = new Notification.Builder(this)
-                .setSmallIcon(android.R.drawable.ic_popup_reminder)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build();
+            Notification notification = new Notification.Builder(this).setSmallIcon(android.R.drawable.ic_popup_reminder).setContentTitle(title).setContentText(message).setAutoCancel(true).setContentIntent(pendingIntent).build();
 
-        notification.defaults |= Notification.DEFAULT_SOUND;
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notification.defaults |= Notification.DEFAULT_SOUND;
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(1, notification);
-        notificationAlreadyShown = true;
+            notificationManager.notify(1, notification);
+            notificationAlreadyShown = true;
+        }// end if
+        else {
+            return;
+        }// end else
     }// end showNotification()
 
     @Override
@@ -212,12 +212,18 @@ public class Zone extends AppCompatActivity{
         if(item.getItemId() == R.id.change_city){
             showInputDialog();
         }
-        else if(item.getItemId() == R.id.becon_option){
+        else if(item.getItemId() == R.id.beacon_option){
             fragment_zone wf = (fragment_zone) getSupportFragmentManager()
                     .findFragmentById(R.id.container);
-            Log.d("BEF SWITCH:","" + wf.beacon + "");
             wf.beacon = !wf.beacon;
-            Log.d("AFT SWITCH:","" + wf.beacon + "");
+            if(wf.beacon)
+            {
+                item.setTitle("Beacon: ON");
+            }// end if
+            else
+            {
+                item.setTitle("Beacon: OFF");
+            }// end else
         }
         return false;
     }
@@ -243,5 +249,4 @@ public class Zone extends AppCompatActivity{
         wf.changeCity(city);
         new city_zone(this).setCity(city);
     }
-
 }
