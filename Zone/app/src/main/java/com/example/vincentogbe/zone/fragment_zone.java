@@ -96,7 +96,7 @@ public class fragment_zone extends Fragment{
                 tempLight = lightLevel(curLight);
 
                 detailsField.setText(details.getString("description").toUpperCase(Locale.US)+ "\n"
-                        + "Humidity: " + main.getString("humidity") + "" + "\n"
+                        + "Humidity: " + main.getString("humidity") + "%" + "\n"
                         + "Pressure: " + main.getString("pressure") + " hPa" + "\n"
                         + "Light: " + tempLight);
 
